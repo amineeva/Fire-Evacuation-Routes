@@ -8,7 +8,7 @@ import tempfile
 middle_coords = [39.5, -98.35]
 
 #Create the map
-MVP1map = folium.Map(location = middle_coords, zoom_start = 4)
+MVP1map = folium.Map(location = middle_coords, zoom_start = 5)
 
 # user_lat = input("Enter latitude: ")
 # user_long = input("Enter longitude: ")
