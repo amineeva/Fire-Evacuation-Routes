@@ -34,7 +34,7 @@ evac_sites = {
 # Add markers for each place
 for name, coords in evac_sites.items():
     lat, lon = coords
-    folium.Marker(location=[lat, lon], popup=name, tooltip=name, icon=folium.Icon(color="blue", icon="fire", prefix = "fa")).add_to(MVP1map)
+    folium.Marker(location=[lat, lon], popup=name, tooltip=name, icon=folium.Icon(color="blue", icon="person-shelter", prefix = "fa")).add_to(MVP1map)
 
 # DATASET ---------------------------------------------------------------
 USA_url = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/8a9f5ecbad092d21416c6105e7313d55/VIIRS_SNPP_NRT/-125,24,-66,49/1/2025-01-10'
@@ -53,20 +53,29 @@ for index, row in df_USA.iterrows():
     bounds = [[row['latitude'] - 0.01, row['longitude'] - 0.01], [row['latitude'] + 0.01, row['longitude'] + 0.01]]
     folium.Rectangle(bounds=bounds, color="red",  fill=True, fill_color="red",fill_opacity=0.5, tooltip="Fire").add_to(MVP1map)
 
-# Add a marker with the popup containing the textbox --------------------
-folium.map.Marker(
-    [30, -120],
-    icon=DivIcon(
-        icon_size=(250,36),
-        icon_anchor=(0,0),
-        html=f'<b><span style="background-color: orange; padding: 5px; font-size: 16pt;">{dataset_name}</span></b>',
-        )
-    ).add_to(MVP1map)
-
-
+# Add custom HTML with dataset name --------------------
+# Define the fixed text as an HTML block
+dataset_name_html = f"""
+<div style="
+    position: fixed; 
+    bottom: 10px; left: 10px; 
+    width: 250px; 
+    height: auto; 
+    background-color: orange; 
+    padding: 10px; 
+    border: 2px solid black;
+    font-size: 10pt;
+    z-index: 1000;">
+    Dataset Name: <b>{dataset_name}</b>
+</div>
+"""
+# Save the map to an HTML file
+MVP1map.save("MVP1map.html") #saves the map in an html file for use
+with open('MVP1map.html', 'r') as file:
+    map_html = file.read()
+map_html = map_html.replace('</body>', f'{dataset_name_html}</body>') # Insert the custom HTML before the closing </body> tag
+with open('MVP1map.html', 'w') as file: # Save the modified HTML back to the file
+    file.write(map_html)
 
 
 # calculate the pathway
-
-# Very last thing!! This is the final map
-MVP1map.save("MVP1map.html") #saves the map in an html file for use
