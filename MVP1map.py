@@ -43,8 +43,8 @@ df_sample = pd.read_csv('https://firms.modaps.eosdis.nasa.gov/content/notebooks/
 df_sample.head()
 
 #filtering latitude & longitude to keep values around the US
-df_filtered = df_sample[(df_sample['latitude'] >= 25.0) & (df_sample['latitude'] <= 49.0)]
-df_filtered = df_sample[(df_sample['longitude'] >= -124) & (df_sample['longitude'] <= -67.8)]
+df_filtered = df_sample[(df_sample['latitude'] >= 32) & (df_sample['latitude'] <= 49)]
+df_filtered = df_filtered[(df_filtered['longitude'] >= -124) & (df_filtered['longitude'] <= -115)]
 
 df_filtered.head()
 
@@ -52,15 +52,11 @@ middle_coords = [39.5, -98.35]
 MVP1map = folium.Map(location = middle_coords, zoom_start = 5)
 
 for index, row in df_filtered.iterrows():
-    folium.Marker(location=[row['latitude'], row['longitude']], tooltip="fire", icon=folium.Icon(color="red", icon="fire")).add_to(MVP1map)
+    # Define rectangle bounds (a small box around the latitude/longitude)
+    bounds = [[row['latitude'] - 0.01, row['longitude'] - 0.01], [row['latitude'] + 0.01, row['longitude'] + 0.01]]
+    folium.Rectangle(bounds=bounds, color="red",  fill=True, fill_color="red",fill_opacity=0.5, tooltip="Fire").add_to(MVP1map)
 
 # calculate the pathway
-
-#
-
-
-
-
 
 # Very last thing!! This is the final map
 MVP1map.save("MVP1map.html") #saves the map in an html file for use
