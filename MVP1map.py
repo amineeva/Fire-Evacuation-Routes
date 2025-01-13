@@ -1,5 +1,6 @@
 import folium
 from folium.plugins import MarkerCluster
+from folium.features import DivIcon
 import pandas as pd
 import webbrowser
 import tempfile
@@ -18,9 +19,9 @@ user_coords = [47.36, -122.20]
 print("Your coordinates are: " + str(user_coords[0]) + ", " + str(user_coords[1]))
 
 #putting down pins (1: drop and 2: coordinates)
-folium.Marker(location=user_coords, popup="User Location").add_to(MVP1map)
+folium.Marker(location=user_coords, popup="User Location", icon=folium.Icon(color="purple")).add_to(MVP1map)
 
-#Palisades Evacuation Sites and Shelters Dictionary
+#Palisades Evacuation Sites and Shelters Dictionary -------------------
 evac_sites = {
     "Calvary Community Church": (33.8438089, -118.29581),
     "Ritchie_Valens_Recreation_Center": (34.16041, -118.26169),
@@ -35,26 +36,35 @@ for name, coords in evac_sites.items():
     lat, lon = coords
     folium.Marker(location=[lat, lon], popup=name, tooltip=name, icon=folium.Icon(color="blue", icon="fire", prefix = "fa")).add_to(MVP1map)
 
+# DATASET ---------------------------------------------------------------
+USA_url = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/8a9f5ecbad092d21416c6105e7313d55/VIIRS_SNPP_NRT/-125,24,-66,49/1/2025-01-10'
+df_USA = pd.read_csv(USA_url)
+df_USA
+# Split the URL and extract the parts
+parts = USA_url.split('/')
 
-# need to get access to current fire data from NASA FIRMS, following instructions from NASA FIRMS: https://firms.modaps.eosdis.nasa.gov/content/academy/data_api/firms_api_use.html
-df_sample = pd.read_csv('https://firms.modaps.eosdis.nasa.gov/content/notebooks/sample_viirs_snpp_071223.csv')
+# Extract the necessary parts
+sensor = parts[7]  # VIIRS_SNPP_NRT
+date = parts[10]   # 2025-01-10
+dataset_name = str(sensor) + " - " + str(date) #"VIIRS SNPP NRT - 01/10/25"
 
-# show top 5 records
-df_sample.head()
-
-#filtering latitude & longitude to keep values around the US
-df_filtered = df_sample[(df_sample['latitude'] >= 32) & (df_sample['latitude'] <= 49)]
-df_filtered = df_filtered[(df_filtered['longitude'] >= -124) & (df_filtered['longitude'] <= -115)]
-
-df_filtered.head()
-
-middle_coords = [39.5, -98.35]
-MVP1map = folium.Map(location = middle_coords, zoom_start = 5)
-
-for index, row in df_filtered.iterrows():
+for index, row in df_USA.iterrows():
     # Define rectangle bounds (a small box around the latitude/longitude)
     bounds = [[row['latitude'] - 0.01, row['longitude'] - 0.01], [row['latitude'] + 0.01, row['longitude'] + 0.01]]
     folium.Rectangle(bounds=bounds, color="red",  fill=True, fill_color="red",fill_opacity=0.5, tooltip="Fire").add_to(MVP1map)
+
+# Add a marker with the popup containing the textbox --------------------
+folium.map.Marker(
+    [30, -120],
+    icon=DivIcon(
+        icon_size=(250,36),
+        icon_anchor=(0,0),
+        html=f'<b><span style="background-color: orange; padding: 5px; font-size: 16pt;">{dataset_name}</span></b>',
+        )
+    ).add_to(MVP1map)
+
+
+
 
 # calculate the pathway
 
