@@ -33,8 +33,26 @@ evac_sites = {
 # Add markers for each place
 for name, coords in evac_sites.items():
     lat, lon = coords
-    folium.Marker(location=[lat, lon], popup=name, tooltip=name, icon=folium.Icon(color="blue", icon="person-shelter", prefix = "fa")).add_to(MVP1map)
+    folium.Marker(location=[lat, lon], popup=name, tooltip=name, icon=folium.Icon(color="blue", icon="fire", prefix = "fa")).add_to(MVP1map)
 
+
+# need to get access to current fire data from NASA FIRMS, following instructions from NASA FIRMS: https://firms.modaps.eosdis.nasa.gov/content/academy/data_api/firms_api_use.html
+df_sample = pd.read_csv('https://firms.modaps.eosdis.nasa.gov/content/notebooks/sample_viirs_snpp_071223.csv')
+
+# show top 5 records
+df_sample.head()
+
+#filtering latitude & longitude to keep values around the US
+df_filtered = df_sample[(df_sample['latitude'] >= 25.0) & (df_sample['latitude'] <= 49.0)]
+df_filtered = df_sample[(df_sample['longitude'] >= -124) & (df_sample['longitude'] <= -67.8)]
+
+df_filtered.head()
+
+middle_coords = [39.5, -98.35]
+MVP1map = folium.Map(location = middle_coords, zoom_start = 5)
+
+for index, row in df_filtered.iterrows():
+    folium.Marker(location=[row['latitude'], row['longitude']], tooltip="fire", icon=folium.Icon(color="red", icon="fire")).add_to(MVP1map)
 
 # calculate the pathway
 
