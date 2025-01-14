@@ -69,12 +69,24 @@ dataset_name_html = f"""
     Dataset Name: <b>{dataset_name}</b>
 </div>
 """
+
+user_input_html = """
+    <div style="position: fixed; top: 15%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); border-radius: 8px; z-index: 1000;">
+        <h4 style="margin: 0;">Enter your location</h4>
+        <input type="text" id="latitude_input" placeholder="Latitude (Ex: 39.5)" style="width: 100%; margin-top: 10px; padding: 5px;"/>
+        <input type="text" id="longitude_input" placeholder="Longitude (Ex: -98.35)" style="width: 100%; margin-top: 10px; padding: 5px;"/>
+        <br><br>
+        <button onclick="alert('Hello, ' + document.getElementById('user_input').value + '!')">Submit</button>
+    </div>
+    """
+
 # Save the map to an HTML file
-MVP1map.save("MVP1map.html") #saves the map in an html file for use
-with open('MVP1map.html', 'r') as file:
+MVP1map.save("static/MVP1map.html") #saves the map in an html file for use
+with open('static/MVP1map.html', 'r') as file:
     map_html = file.read()
 map_html = map_html.replace('</body>', f'{dataset_name_html}</body>') # Insert the custom HTML before the closing </body> tag
-with open('MVP1map.html', 'w') as file: # Save the modified HTML back to the file
+map_html = map_html.replace('</body>', f'{user_input_html}</body>')
+with open('static/MVP1map.html', 'w') as file: # Save the modified HTML back to the file
     file.write(map_html)
 
 
